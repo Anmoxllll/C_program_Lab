@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Student {
+    int id;
+    char name[50];
+    float marks;
+};
+
+void insertStudentDetails(struct Student **students, int *totalStudents) {
+    struct Student *temp = (struct Student*) malloc(sizeof(struct Student));
+    printf("Enter Student id: ");
+    scanf("%d", &temp->id);
+    printf("Enter Student name: ");
+    scanf("%s", temp->name);
+    printf("Enter Student marks: ");
+    scanf("%f", &temp->marks);
+    *students = (struct Student*) realloc(*students, (*totalStudents + 1) * sizeof(struct Student));
+    (*students)[*totalStudents] = *temp;
+    (*totalStudents)++;
+    free(temp);
+}
+
+void displayStudentDetails(struct Student *students, int totalStudents) {
+    for (int i = 0; i < totalStudents; i++) {
+        printf("Student id: %d\n", students[i].id);
+        printf("Student name: %s\n", students[i].name);
+        printf("Student marks: %.2f\n", students[i].marks);
+    }
+}
+
+int main() {
+    struct Student *students = NULL;
+    int totalStudents = 0;
+    int choice;
+    while (1) {
+        printf("\n1. Insert Student Details\n");
+        printf("2. Display Student Details\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                insertStudentDetails(&students, &totalStudents);
+                break;
+            case 2:
+                displayStudentDetails(students, totalStudents);
+                break;
+            case 3:
+                free(students);
+                exit(0);
+            default:
+                printf("Invalid choice. Please enter a valid choice.\n");
+        }
+    }
+    return 0;
+}
