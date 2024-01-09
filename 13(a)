@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Student {
+    int id;
+    char name[50];
+    float marks[5];
+};
+
+void readStudentDetails(FILE *file, struct Student **students, int *totalStudents) {
+    struct Student *temp = (struct Student*) malloc(sizeof(struct Student));
+    while (fread(temp, sizeof(struct Student), 1, file) == 1) {
+        *students = (struct Student*) realloc(*students, (*totalStudents + 1) * sizeof(struct Student));
+        (*students)[*totalStudents] = *temp;
+        (*totalStudents)++;
+    }
+    free(temp);
+}
+
+void writeStudentDetails(FILE *file, struct Student *students, int totalStudents) {
+    for (int i = 0; i < totalStudents; i++) {
+        fwrite(&students[i], sizeof(struct Student), 1, file);
+    }
+}
+
+int main() {
+    struct Student *students = NULL;
+    int totalStudents = 0;
+    int choice;
+    while (1) {
+        printf("\n1. Read Student Details from file\n");
+        printf("2. Write Student Details to file\n");
+        printf("3. Display Student Details\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                {
+                    FILE *file = fopen("students.bin", "rb");
+                    if (file == NULL) {
+                        printf("Error: Unable to open the file.\n");
+                        break;
+                    }
+                    readStudentDetails(file, &students, &totalStudents);
+                    fclose(file);
+                }
+                break;
+            case 2:
+                {
+                    FILE *file = fopen("students.bin", "wb");
+                    if (file == NULL) {
+                        printf("Error: Unable to open the file.\n");
+                        break;
+                    }
+                    writeStudentDetails(file, students, totalStudents);
+                    fclose(file);
+                }
+                break;
+            case 3:
+                displayStudentDetails(students, totalStudents);
+                break;
+            case 4:
+                free(students);
+                exit(0);
+            default:
+                printf("Invalid choice. Please enter a valid choice.\n");
+        }
+    }
+    return 0;
+}
