@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct StudentMarks {
+    int rollNumber;
+    char name[50];
+    int mark1;
+    int mark2;
+    int mark3;
+    float average;
+};
+
+void calculateAverage(struct StudentMarks *student) {
+    float sum = (float)(student->mark1 + student->mark2 + student->mark3);
+    student->average = sum / 3;
+}
+
+void readMarksData(struct StudentMarks *student, FILE *file) {
+    fscanf(file, "%d %s %d %d %d", &student->rollNumber, student->name, &student->mark1, &student->mark2, &student->mark3);
+    calculateAverage(student);
+}
+
+void writeMarksData(struct StudentMarks *student, FILE *file) {
+    fprintf(file, "%d %s %d %d %d %.2f\n", student->rollNumber, student->name, student->mark1, student->mark2, student->mark3, student->average);
+}
+
+int main() {
+    struct StudentMarks student;
+
+    FILE *file = fopen("studentMarks.txt", "r");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    readMarksData(&student, file);
+    fclose(file);
+
+    printf("Roll Number: %d\n", student.rollNumber);
+    printf("Name: %s\n", student.name);
+    printf("Mark 1: %d\n", student.mark1);
+    printf("Mark 2: %d\n", student.mark2);
+    printf("Mark 3: %d\n", student.mark3);
+    printf("Average: %.2f\n", student.average);
+
+    file = fopen("updatedStudentMarks.txt", "w");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    writeMarksData(&student, file);
+    fclose(file);
+
+    return 0;
+}
